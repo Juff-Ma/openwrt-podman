@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=podman-containers
 PKG_VERSION:=5.8.2
-PKG_RELEASE:=4
+PKG_RELEASE:=5
 
 PKG_SOURCE:=podman-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/containers/podman/archive/v$(PKG_VERSION)
@@ -44,10 +44,12 @@ endef
 
 define Package/podman-service
   $(call Package/podman-service/Default)
-  TITLE:=Podman
+  TITLE:=Podman Service
   DEPENDS:=$(GO_ARCH_DEPENDS) +conmon +libgpgme +libseccomp +nsenter \
 	+zoneinfo-simple +kmod-veth +slirp4netns +netavark +aardvark-dns \
 	+catatonit +uxc +PODMAN_SELINUX_SUPPORT:libselinux
+  CONFILICTS:=+podman
+  MENU:=1
 endef
 
 define Package/podman-service/description
@@ -139,3 +141,4 @@ define Package/podman-containers/install
 endef
 
 $(eval $(call BuildPackage,podman-service))
+$(eval $(call BuildPackage,podman-containers))
