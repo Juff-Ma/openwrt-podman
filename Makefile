@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=podman-containers
 PKG_VERSION:=5.8.2
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_SOURCE:=podman-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/containers/podman/archive/v$(PKG_VERSION)
@@ -37,7 +37,8 @@ endef
 
 define Package/podman-service/Default
   SECTION:=utils
-  CATEGORY:=Utilities
+  CATEGORY:=I
+  SUBMENU:=Podman
   URL:=https://podman.io
 endef
 
