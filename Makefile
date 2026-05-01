@@ -81,6 +81,10 @@ define Package/podman-service/conffiles
 /etc/containers/networks/podman.json
 endef
 
+define Package/podman-containers/conffiles
+/etc/config/podman
+endef
+
 GO_PKG_TAGS:=seccomp exclude_graphdriver_devicemapper apparmor
 ifdef CONFIG_PODMAN_SELINUX_SUPPORT
   GO_PKG_TAGS+= selinux
@@ -123,6 +127,14 @@ define Package/podman-service/install
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/service/podman.init $(1)/etc/init.d/podman
 	$(SED) 's/driver = \"\"/driver = \"overlay\"/g' $(1)/etc/containers/storage.conf
+endef
+
+define Package/podman-containers/install
+	$(INSTALL_DIR) $(1)/etc/config
+	$(INSTALL_CONF) ./files/containers/podman.conf $(1)/etc/config/podman
+
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/containers/containers.init $(1)/etc/init.d/containers
 endef
 
 $(eval $(call BuildPackage,podman-service))
