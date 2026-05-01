@@ -1,16 +1,16 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=podman
+PKG_NAME:=podman-containers
 PKG_VERSION:=5.8.2
 PKG_RELEASE:=1
 
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE:=podman-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/containers/podman/archive/v$(PKG_VERSION)
 PKG_HASH:=b20ea65afc5a58ea1cea019bd51a5d84eb9042d25d3eb82c55010c8815732d84
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=Oskari Rauta <oskari.rauta@gmail.com>
+PKG_MAINTAINER:=Julian Rossbach <contact@juffma.de>
 PKG_CPE_ID:=cpe:/a:podman_project:podman
 
 PKG_BUILD_DEPENDS:=golang/host protobuf/host btrfs-progs
@@ -35,21 +35,21 @@ define Download/default-policy
   HASH:=cddfaa8e6a7e5497b67cc0dd8e8517058d0c97de91bf46fff867528415f2d946
 endef
 
-define Package/podman
+define Package/podman-service
   SECTION:=utils
   CATEGORY:=Utilities
   TITLE:=Podman
   URL:=https://podman.io
   DEPENDS:=$(GO_ARCH_DEPENDS) +conmon +libgpgme +libseccomp +nsenter \
 	+zoneinfo-simple +kmod-veth +slirp4netns +netavark +aardvark-dns \
-	+catatonit +crun +PODMAN_SELINUX_SUPPORT:libselinux
+	+catatonit +uxc +PODMAN_SELINUX_SUPPORT:libselinux
 endef
 
-define Package/podman/description
+define Package/podman-service/description
   Podman: A tool for managing OCI containers and pods
 endef
 
-define Package/podman/config
+define Package/podman-service/config
   menu "Configuration"
 
     config PODMAN_SELINUX_SUPPORT
@@ -59,7 +59,7 @@ define Package/podman/config
   endmenu
 endef
 
-define Package/podman/conffiles
+define Package/podman-service/conffiles
 /etc/containers/policy.json
 /etc/containers/storage.conf
 /etc/containers/registries.conf
@@ -92,7 +92,7 @@ ifneq ($(CONFIG_USE_MUSL),)
   TARGET_CFLAGS += -D_LARGEFILE64_SOURCE
 endif
 
-define Package/podman/install
+define Package/podman-service/install
 	$(INSTALL_DIR) $(1)/usr/bin $(1)/usr/lib/podman
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/{podman,podman-remote} $(1)/usr/bin/
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/podman/{rootlessport,quadlet} $(1)/usr/lib/podman/
@@ -111,4 +111,4 @@ define Package/podman/install
 	$(SED) 's/driver = \"\"/driver = \"overlay\"/g' $(1)/etc/containers/storage.conf
 endef
 
-$(eval $(call BuildPackage,podman))
+$(eval $(call BuildPackage,podman-service))
