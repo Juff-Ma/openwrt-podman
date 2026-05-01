@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=podman-service
 PKG_VERSION:=5.8.2
-PKG_RELEASE:=7
+PKG_RELEASE:=8
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/containers/podman/archive/v$(PKG_VERSION)
@@ -43,8 +43,8 @@ define Package/podman-service
   TITLE:=Podman Service
   DEPENDS:=$(GO_ARCH_DEPENDS) +conmon +libgpgme +libseccomp +nsenter \
 	+zoneinfo-simple +kmod-veth +slirp4netns +netavark +aardvark-dns \
-	+catatonit +uxc +PODMAN_SELINUX_SUPPORT:libselinux
-  CONFILICTS:=+podman
+	+catatonit +uxc +PODMAN_I_SELINUX_SUPPORT:libselinux
+  MENU:=1
 endef
 
 define Package/podman-service/description
@@ -54,7 +54,7 @@ endef
 define Package/podman-service/config
   menu "Configuration"
 
-    config PODMAN_SELINUX_SUPPORT
+    config PODMAN_I_SELINUX_SUPPORT
     bool "Enable SELinux support"
     default n
 
@@ -70,7 +70,7 @@ define Package/podman-service/conffiles
 endef
 
 GO_PKG_TAGS:=seccomp exclude_graphdriver_devicemapper apparmor
-ifdef CONFIG_PODMAN_SELINUX_SUPPORT
+ifdef CONFIG_PODMAN_I_SELINUX_SUPPORT
   GO_PKG_TAGS+= selinux
 endif
 
