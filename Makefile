@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=podman-containers
 PKG_VERSION:=5.8.2
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE:=podman-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/containers/podman/archive/v$(PKG_VERSION)
@@ -35,11 +35,15 @@ define Download/default-policy
   HASH:=cddfaa8e6a7e5497b67cc0dd8e8517058d0c97de91bf46fff867528415f2d946
 endef
 
-define Package/podman-service
+define Package/podman-service/Default
   SECTION:=utils
   CATEGORY:=Utilities
-  TITLE:=Podman
   URL:=https://podman.io
+endef
+
+define Package/podman-service
+  $(call Package/podman-service/Default)
+  TITLE:=Podman
   DEPENDS:=$(GO_ARCH_DEPENDS) +conmon +libgpgme +libseccomp +nsenter \
 	+zoneinfo-simple +kmod-veth +slirp4netns +netavark +aardvark-dns \
 	+catatonit +uxc +PODMAN_SELINUX_SUPPORT:libselinux
@@ -47,6 +51,16 @@ endef
 
 define Package/podman-service/description
   Podman: A tool for managing OCI containers and pods
+endef
+
+define Package/podman-containers
+  $(call Package/podman-service/Default)
+  TITLE:=Podman Containers
+  DEPENDS:=+podman-service
+endef
+
+define Package/podman-containers/description
+  Podman Containers: Container startup service for Podman
 endef
 
 define Package/podman-service/config
@@ -101,13 +115,13 @@ define Package/podman-service/install
 	$(INSTALL_DATA) $(DL_DIR)/default-policy.json-362f70b056 $(1)/etc/containers/policy.json
 	$(INSTALL_DATA) $(DL_DIR)/registries.fedora-da9a9c8778 $(1)/etc/containers/registries.conf
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/vendor/go.podman.io/storage/storage.conf $(1)/etc/containers/storage.conf
-	$(INSTALL_DATA) ./files/containers.conf $(1)/etc/containers/containers.conf
+	$(INSTALL_DATA) ./files/service/containers.conf $(1)/etc/containers/containers.conf
 	$(INSTALL_DIR) $(1)/etc/containers/networks
-	$(INSTALL_CONF) ./files/podman.json $(1)/etc/containers/networks
+	$(INSTALL_CONF) ./files/service/podman.json $(1)/etc/containers/networks
 	$(INSTALL_DIR) $(1)/usr/share/containers
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/vendor/go.podman.io/common/pkg/seccomp/seccomp.json $(1)/usr/share/containers/
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/podman.init $(1)/etc/init.d/podman
+	$(INSTALL_BIN) ./files/service/podman.init $(1)/etc/init.d/podman
 	$(SED) 's/driver = \"\"/driver = \"overlay\"/g' $(1)/etc/containers/storage.conf
 endef
 
