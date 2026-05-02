@@ -2,8 +2,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=podman-service
 PKG_VERSION:=5.8.2
-PKG_RELEASE:=9
+PKG_RELEASE:=10
 
+PKG_BUILD_DIR:=$(BUILD_DIR)/podman-$(PKG_VERSION)
 PKG_SOURCE:=podman-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://github.com/containers/podman/archive/v$(PKG_VERSION)
 PKG_HASH:=b20ea65afc5a58ea1cea019bd51a5d84eb9042d25d3eb82c55010c8815732d84
