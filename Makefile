@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=podman-service
 PKG_VERSION:=5.8.2
-PKG_RELEASE:=10
+PKG_RELEASE:=11
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/podman-$(PKG_VERSION)
 PKG_SOURCE:=podman-$(PKG_VERSION).tar.gz
@@ -89,6 +89,16 @@ define Build/Prepare
 	$(call Build/Prepare/Default)
 	$(eval $(call Download,default-registries))
 	$(eval $(call Download,default-policy))
+
+	rm -rf $(PKG_BUILD_DIR)/vendor
+endef
+
+define Build/Compile
+	(cd $(PKG_BUILD_DIR); \
+		$(MAKE_VARS) $(MAKE) vendor \
+	)
+
+	$(call Build/Compile/Default)
 endef
 
 ifneq ($(CONFIG_USE_MUSL),)
